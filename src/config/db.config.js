@@ -1,6 +1,6 @@
-var conf = require('./constants.js');
+const conf = require('./constants.js');
 
-var mongoose =  require('mongoose');
+const mongoose =  require('mongoose');
 
 mongoose.connect(conf.db_url);
 mongoose.connection.on('connect', function () {
