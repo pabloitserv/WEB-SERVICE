@@ -15,30 +15,43 @@ function createUserInMongo(req, res, next) {
 
             users.forEach(user => {
                 if (user.active) {
-                    console.log("Ativos: " + user.name);
 
-                    /*
-                    dao.deleteUser({ "cpf": user.cpf })
-                        .exec((err, data) => {
-                            if (err) return res.json(err);
-                            console.log("Active: " + user.name);
-                            return res.json("User active", user.name);
-
-                        });*/
+                    dao.createUser(user).save((err, data) => {
+                        if (err) {
+                            return res.json(err);
+                        } else {
+                            console.log("Ativos: " + user.name + "=>");
+                            return res.json(user.name);
+                        }
+                    });
                 } else {
-                    console.log("Removidos: " + user.name);
-                    /*  dao.createUser(user)
-                          .save((err, data) => {
-                              if (err) return res.json(err);
-                              console.log("Updated: " + user.name);
-                              return res.json("User updated", user.name);
-                          })*/
+                    console.log("Removidos: " + user.name + " X ");
+                    dao.deleteUser({ "cpf": user.cpf }).exec((err, data) => {
+                        if (err) {
+                            return res.json(err);
+                        } else {
+                            return res.json(user.name);
+                        }
+                    });
                 }
             });
+            res.end();
         });
-
-
 }
+
+function updateUser(req, res, next) {
+    var query = {
+        _id: req.params.id
+    }
+    var mod = {
+        "$set": { "password": req.params.password }
+    }
+    dao.findOneUserAndUpdate(query, mod).exec((err, data) => {
+        return res.json(err ? err : data);
+    });
+}
+
 module.exports = {
-    post: createUserInMongo
+    post: createUserInMongo,
+    put: updateUser
 }
